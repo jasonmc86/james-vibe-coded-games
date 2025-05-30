@@ -19,7 +19,7 @@ A fun racing game where you control a car through multiple lanes while avoiding 
 
 ## Play the Game
 
-[Play Now!](https://YOUR_GITHUB_USERNAME.github.io/racing-car-game)
+[Play Now!](https://jasonmc86.github.io/james-racing-car-game)
 
 ## Technologies Used
 

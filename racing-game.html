@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Racing Car Game</title>
+    <title>James and Jason's Car Game</title>
     <style>
         body {
             margin: 0;
@@ -15,6 +15,18 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+        }
+
+        h1 {
+            color: #fff;
+            background-color: #4CAF50;
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin: 0 0 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 32px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         #game-container {
@@ -72,7 +84,7 @@
     </style>
 </head>
 <body>
-    <h1 style="color: #fff;">Racing Car Game</h1>
+    <h1>James and Jason's Car Game</h1>
     <div id="score">Score: <span id="score-value">0</span></div>
     <div id="game-container">
         <canvas id="gameCanvas" width="600" height="800"></canvas>
@@ -141,13 +153,14 @@
         // Lane configuration
         const numLanes = 10;
         const laneWidth = Math.floor(canvas.width / numLanes);
+        const treeLanes = [0, 1, 8, 9]; // Lanes with trees
         
         // Car properties
         const car = {
             x: laneWidth * 5 + (laneWidth - 40) / 2, // Start in middle lane (lane 5)
             y: canvas.height - 120,
-            width: 40, // Smaller width to fit in narrower lanes
-            height: 80, // Adjusted height for better proportions
+            width: 40,
+            height: 80,
             speed: 5,
             targetX: null,
             targetY: null,
@@ -166,18 +179,39 @@
         // Animal types
         const animals = [
             {
-                name: 'obstacle1',
-                color: '#4a90e2'  // Blue
-            },
-            {
-                name: 'obstacle2',
-                color: '#e24a4a'  // Red
-            },
-            {
-                name: 'obstacle3',
-                color: '#4ae24a'  // Green
+                name: 'json',
+                image: new Image(),
+                src: 'images/json.jpg'
             }
         ];
+        
+        // Load all images
+        let imagesLoaded = 0;
+        const totalImages = animals.length;
+        
+        function loadImages() {
+            return new Promise((resolve) => {
+                animals.forEach(animal => {
+                    animal.image.onload = () => {
+                        imagesLoaded++;
+                        if (imagesLoaded === totalImages) {
+                            resolve();
+                        }
+                    };
+                    animal.image.onerror = () => {
+                        console.error(`Failed to load image: ${animal.src}`);
+                        // Fallback to a colored rectangle if image fails to load
+                        animal.image = null;
+                        animal.color = '#666';
+                        imagesLoaded++;
+                        if (imagesLoaded === totalImages) {
+                            resolve();
+                        }
+                    };
+                    animal.image.src = animal.src;
+                });
+            });
+        }
         
         // Road properties
         const roadLines = [];
@@ -209,14 +243,20 @@
             if (e.key === 'ArrowLeft' && currentTime - lastMoveTime > moveCooldown) {
                 keys.left = true;
                 lastMoveTime = currentTime;
-                const newX = Math.max(0, car.x - laneWidth);
-                car.targetX = newX;
+                const currentLane = Math.floor(car.x / laneWidth);
+                if (currentLane > 2) { // Only move if not in leftmost playable lane
+                    const newX = Math.max(laneWidth * 2, car.x - laneWidth);
+                    car.targetX = newX;
+                }
             }
             if (e.key === 'ArrowRight' && currentTime - lastMoveTime > moveCooldown) {
                 keys.right = true;
                 lastMoveTime = currentTime;
-                const newX = Math.min(canvas.width - car.width, car.x + laneWidth);
-                car.targetX = newX;
+                const currentLane = Math.floor(car.x / laneWidth);
+                if (currentLane < 7) { // Only move if not in rightmost playable lane
+                    const newX = Math.min(laneWidth * 7, car.x + laneWidth);
+                    car.targetX = newX;
+                }
             }
             if (e.key === 'ArrowUp') {
                 keys.up = true;
@@ -256,10 +296,10 @@
                 }
             }
             
-            // Return lanes that are not occupied, excluding the middle lane (lane 1)
+            // Return lanes that are not occupied and not tree lanes
             const availableLanes = [];
-            for (let i = 0; i < numLanes; i++) {
-                if (!occupiedLanes.has(i) && i !== 1) { // Exclude middle lane (index 1)
+            for (let i = 2; i <= 7; i++) { // Only consider lanes 2-7
+                if (!occupiedLanes.has(i)) {
                     availableLanes.push(i);
                 }
             }
@@ -277,17 +317,20 @@
             
             // Randomly select one of the available lanes
             const lane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
-            const x = lane * laneWidth + (laneWidth - obstacleWidth) / 2;
-            const obstacle = animals[Math.floor(Math.random() * animals.length)];
-            
-            obstacles.push({
-                x: x,
-                y: -obstacleHeight,
-                width: obstacleWidth,
-                height: obstacleHeight,
-                lane: lane,
-                animal: obstacle
-            });
+            // Only create obstacles in non-tree lanes (2-7)
+            if (lane >= 2 && lane <= 7) {
+                const x = lane * laneWidth + (laneWidth - obstacleWidth) / 2;
+                const obstacle = animals[Math.floor(Math.random() * animals.length)];
+                
+                obstacles.push({
+                    x: x,
+                    y: -obstacleHeight,
+                    width: obstacleWidth,
+                    height: obstacleHeight,
+                    lane: lane,
+                    animal: obstacle
+                });
+            }
         }
         
         function updateObstacles() {
@@ -339,20 +382,37 @@
         
         function drawObstacles() {
             for (let obstacle of obstacles) {
-                ctx.fillStyle = obstacle.animal.color;
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                if (obstacle.animal.image) {
+                    // Draw the image
+                    ctx.drawImage(
+                        obstacle.animal.image,
+                        obstacle.x,
+                        obstacle.y,
+                        obstacle.width,
+                        obstacle.height
+                    );
+                } else {
+                    // Fallback to colored rectangle if image failed to load
+                    ctx.fillStyle = obstacle.animal.color;
+                    ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                }
             }
         }
         
         function drawRoad() {
-            // Draw road
+            // Draw road (only in playable lanes 2-7)
             ctx.fillStyle = '#444';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(laneWidth * 2, 0, laneWidth * 6, canvas.height);
             
-            // Draw lane dividers
+            // Draw lane dividers (only between playable lanes)
             ctx.fillStyle = 'white';
-            for (let line of roadLines) {
-                ctx.fillRect(line.x, line.y, lineWidth, lineHeight);
+            for (let y = -lineHeight; y < canvas.height; y += lineHeight + lineGap) {
+                for (let i = 2; i < 7; i++) { // Only draw lines between lanes 2-7
+                    roadLines.push({
+                        x: i * laneWidth - lineWidth / 2,
+                        y: y
+                    });
+                }
             }
         }
         
@@ -446,6 +506,9 @@
             // First reset everything
             resetGame();
             
+            // Load images
+            await loadImages();
+            
             // Start new game loop
             console.log('Starting game loop');
             gameLoop = requestAnimationFrame(gameUpdate);
@@ -468,6 +531,14 @@
                 if (car.x === car.targetX) {
                     car.targetX = null;
                 }
+            }
+            
+            // Keep car within playable lanes
+            const currentLane = Math.floor(car.x / laneWidth);
+            if (currentLane < 2) {
+                car.x = laneWidth * 2;
+            } else if (currentLane > 7) {
+                car.x = laneWidth * 7;
             }
             
             // Handle forward/backward movement
@@ -493,7 +564,9 @@
             // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Update game elements
+            // Draw game elements
+            drawTrees(); // Draw trees first (static background)
+            drawRoad(); // Draw road on top of trees
             updateRoadLines();
             updateObstacles();
             updateBullets();
@@ -504,7 +577,6 @@
             }
             
             // Draw game elements
-            drawRoad();
             drawObstacles();
             drawBullets();
             drawCar();
@@ -523,6 +595,36 @@
             }
             document.getElementById('final-score').textContent = score;
             gameOverScreen.style.display = 'block';
+        }
+        
+        function drawTrees() {
+            // Draw trees in the tree lanes
+            for (let lane of treeLanes) {
+                const x = lane * laneWidth;
+                // Draw multiple trees in each lane
+                for (let y = 0; y < canvas.height; y += 150) {
+                    // Tree trunk
+                    ctx.fillStyle = '#8B4513'; // Brown
+                    ctx.fillRect(x + laneWidth/2 - 5, y, 10, 40);
+                    
+                    // Tree top
+                    ctx.fillStyle = '#228B22'; // Forest green
+                    ctx.beginPath();
+                    ctx.moveTo(x + laneWidth/2, y - 20);
+                    ctx.lineTo(x + laneWidth/2 - 30, y + 20);
+                    ctx.lineTo(x + laneWidth/2 + 30, y + 20);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    // Second layer of tree top
+                    ctx.beginPath();
+                    ctx.moveTo(x + laneWidth/2, y - 10);
+                    ctx.lineTo(x + laneWidth/2 - 25, y + 10);
+                    ctx.lineTo(x + laneWidth/2 + 25, y + 10);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
         }
         
         // Initialize the game
