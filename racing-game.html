@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>James and Jason's Car Game</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background-color: #333;
             font-family: Arial, sans-serif;
             text-align: center;
@@ -15,43 +15,51 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            touch-action: manipulation;
         }
 
         h1 {
             color: #fff;
             background-color: #4CAF50;
-            padding: 15px 30px;
+            padding: 10px 20px;
             border-radius: 10px;
-            margin: 0 0 20px 0;
+            margin: 0 0 10px 0;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            font-size: 32px;
+            font-size: clamp(20px, 5vw, 32px);
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         #game-container {
             position: relative;
-            margin: 20px auto;
+            margin: 10px auto;
+            width: 100%;
+            max-width: 600px;
         }
 
         canvas {
             background-color: #666;
             border: 3px solid #fff;
             border-radius: 10px;
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
         }
 
         #score {
-            font-size: 24px;
+            font-size: clamp(18px, 4vw, 24px);
             color: #fff;
-            margin: 20px;
+            margin: 10px;
         }
 
         #controls {
-            margin: 20px;
+            margin: 10px;
             padding: 10px;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             color: #fff;
+            width: 100%;
+            max-width: 600px;
         }
 
         button {
@@ -63,6 +71,7 @@
             color: white;
             border: none;
             border-radius: 5px;
+            touch-action: manipulation;
         }
 
         button:hover {
@@ -80,6 +89,60 @@
             padding: 20px;
             border-radius: 10px;
             text-align: center;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        #mobile-controls {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0;
+        }
+
+        .control-button {
+            width: 60px;
+            height: 60px;
+            margin: 5px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 2px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .control-button:active {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            #mobile-controls {
+                display: block;
+            }
+            
+            body {
+                padding: 5px;
+            }
+            
+            #controls {
+                margin: 5px;
+                padding: 5px;
+            }
         }
     </style>
 </head>
@@ -92,6 +155,19 @@
             <h2>Game Over!</h2>
             <p>Your score: <span id="final-score">0</span></p>
             <button onclick="startGame()">Play Again</button>
+        </div>
+    </div>
+    <div id="mobile-controls">
+        <div class="control-row">
+            <div class="control-button" id="left-btn">←</div>
+            <div class="control-button" id="right-btn">→</div>
+        </div>
+        <div class="control-row">
+            <div class="control-button" id="up-btn">↑</div>
+            <div class="control-button" id="down-btn">↓</div>
+        </div>
+        <div class="control-row">
+            <div class="control-button" id="shoot-btn">🔫</div>
         </div>
     </div>
     <div id="controls">
@@ -637,6 +713,108 @@
         
         // Start the game
         startGame();
+
+        // Add mobile touch controls
+        function setupMobileControls() {
+            const leftBtn = document.getElementById('left-btn');
+            const rightBtn = document.getElementById('right-btn');
+            const upBtn = document.getElementById('up-btn');
+            const downBtn = document.getElementById('down-btn');
+            const shootBtn = document.getElementById('shoot-btn');
+
+            // Touch start events
+            leftBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys.left = true;
+                const currentLane = Math.floor(car.x / laneWidth);
+                if (currentLane > 2) {
+                    const newX = Math.max(laneWidth * 2, car.x - laneWidth);
+                    car.targetX = newX;
+                }
+            });
+
+            rightBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys.right = true;
+                const currentLane = Math.floor(car.x / laneWidth);
+                if (currentLane < 7) {
+                    const newX = Math.min(laneWidth * 7, car.x + laneWidth);
+                    car.targetX = newX;
+                }
+            });
+
+            upBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys.up = true;
+            });
+
+            downBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys.down = true;
+            });
+
+            shootBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const currentTime = Date.now();
+                if (currentTime - lastShotTime > shotCooldown) {
+                    lastShotTime = currentTime;
+                    const bulletX = car.x + (car.width - bulletWidth) / 2;
+                    bullets.push({
+                        x: bulletX,
+                        y: car.y,
+                        width: bulletWidth,
+                        height: bulletHeight
+                    });
+                }
+            });
+
+            // Touch end events
+            leftBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys.left = false;
+            });
+
+            rightBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys.right = false;
+            });
+
+            upBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys.up = false;
+            });
+
+            downBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys.down = false;
+            });
+        }
+
+        // Handle window resize
+        function handleResize() {
+            const canvas = document.getElementById('gameCanvas');
+            const container = document.getElementById('game-container');
+            const containerWidth = container.clientWidth;
+            
+            // Maintain aspect ratio
+            const aspectRatio = canvas.height / canvas.width;
+            canvas.style.width = containerWidth + 'px';
+            canvas.style.height = (containerWidth * aspectRatio) + 'px';
+        }
+
+        // Initialize mobile controls and handle resize
+        window.addEventListener('load', function() {
+            setupMobileControls();
+            handleResize();
+            window.addEventListener('resize', handleResize);
+        });
+
+        // Prevent default touch behaviors
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.classList.contains('control-button')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
-</html> 
+</html>   
