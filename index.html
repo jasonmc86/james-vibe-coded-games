@@ -3,40 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>James's Games Collection</title>
+    <title>James's Games</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 2rem;
+            color: #fff;
         }
 
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
+            width: 100%;
+            padding: 2rem;
         }
 
         h1 {
-            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.2rem;
         }
 
         .games-grid {
@@ -47,80 +44,88 @@
         }
 
         .game-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .game-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .game-title {
-            color: #2c3e50;
-            font-size: 1.5rem;
+        .game-card h2 {
+            color: #fff;
             margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
 
-        .game-description {
-            color: #7f8c8d;
+        .game-card p {
+            color: #ccc;
             margin-bottom: 1.5rem;
             line-height: 1.6;
         }
 
-        .play-button {
+        .game-link {
             display: inline-block;
+            padding: 0.8rem 1.5rem;
             background: #3498db;
             color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 25px;
             text-decoration: none;
-            transition: background 0.3s ease;
+            border-radius: 25px;
+            transition: background 0.3s;
         }
 
-        .play-button:hover {
+        .game-link:hover {
             background: #2980b9;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 3rem;
-            color: #7f8c8d;
+        .game-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>James's Games Collection</h1>
-            <p class="subtitle">A collection of fun and educational games for children</p>
-        </header>
-
+        <h1>James's Games</h1>
         <div class="games-grid">
             <div class="game-card">
-                <h2 class="game-title">Green Light Red Light</h2>
-                <p class="game-description">A classic game where you need to move when the light is green and freeze when it's red. Avoid obstacles and race to the finish line!</p>
-                <a href="green-light-red-light/index.html" class="play-button">Play Now</a>
+                <div class="game-icon">🎮</div>
+                <h2>Shooting Pirate Game</h2>
+                <p>Blast enemy ships and sharks in this exciting pirate adventure! Use your cannons to defend your ship and score points.</p>
+                <a href="./shooting-pirate-game/index.html" class="game-link">Play Now</a>
             </div>
-
             <div class="game-card">
-                <h2 class="game-title">Balloon Pop</h2>
-                <p class="game-description">Pop as many balloons as you can! Test your reflexes and have fun with this colorful balloon popping game.</p>
-                <a href="balloon-pop/index.html" class="play-button">Play Now</a>
+                <div class="game-icon">🚗</div>
+                <h2>Racing Car Game</h2>
+                <p>Race through exciting tracks and compete for the best time in this thrilling racing game.</p>
+                <a href="./racing-car-game/index.html" class="game-link">Play Now</a>
             </div>
-
             <div class="game-card">
-                <h2 class="game-title">Racing Car Game</h2>
-                <p class="game-description">Race your car through exciting tracks, avoid obstacles, and compete for the best time!</p>
-                <a href="racing-car-game/index.html" class="play-button">Play Now</a>
+                <div class="game-icon">🎈</div>
+                <h2>Balloon Pop</h2>
+                <p>Pop as many balloons as you can in this fun and colorful balloon popping game!</p>
+                <a href="./balloon-pop/index.html" class="game-link">Play Now</a>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🚦</div>
+                <h2>Green Light Red Light</h2>
+                <p>Test your reflexes in this classic game of timing and quick reactions!</p>
+                <a href="./green-light-red-light/index.html" class="game-link">Play Now</a>
             </div>
         </div>
-
-        <footer>
-            <p>© 2024 James's Games Collection. All rights reserved.</p>
-        </footer>
     </div>
 </body>
 </html> 
