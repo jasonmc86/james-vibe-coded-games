@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate Shooting Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .score-container {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(180deg, #87CEEB 0%, #E0FFFF 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .sun {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background: #FFD700;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #FFA500;
+            z-index: 1;
+        }
+
+        .sun::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0) 70%);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            z-index: 1;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .cloud-1 {
+            width: 100px;
+            height: 40px;
+            top: 30px;
+            left: 50px;
+            animation: floatCloud 20s linear infinite;
+        }
+
+        .cloud-1::before {
+            width: 50px;
+            height: 50px;
+            top: -20px;
+            left: 15px;
+        }
+
+        .cloud-1::after {
+            width: 40px;
+            height: 40px;
+            top: -15px;
+            left: 45px;
+        }
+
+        .cloud-2 {
+            width: 80px;
+            height: 30px;
+            top: 80px;
+            right: 100px;
+            animation: floatCloud 15s linear infinite reverse;
+        }
+
+        .cloud-2::before {
+            width: 40px;
+            height: 40px;
+            top: -15px;
+            left: 10px;
+        }
+
+        .cloud-2::after {
+            width: 35px;
+            height: 35px;
+            top: -12px;
+            left: 35px;
+        }
+
+        @keyframes floatCloud {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(calc(100vw + 100px)); }
+        }
+
+        .pirate {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: #8B4513;
+            border-radius: 10px 10px 0 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        .pirate::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: #8B4513;
+            border-radius: 50%;
+            border: 2px solid #654321;
+        }
+
+        .pirate::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: #FFD700;
+            border-radius: 50%;
+            border: 2px solid #B8860B;
+        }
+
+        .pirate .hull {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #8B4513;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+        }
+
+        .pirate .hull::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: #654321;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .pirate .deck {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: 20px;
+            background: #A0522D;
+            border-radius: 5px;
+        }
+
+        .pirate .mast {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 80px;
+            background: #8B4513;
+            z-index: 1;
+        }
+
+        .pirate .mast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: #FFD700;
+            border-radius: 50%;
+            border: 2px solid #B8860B;
+        }
+
+        .pirate .sail {
+            position: absolute;
+            top: -70px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: #F5F5F5;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 0;
+        }
+
+        .pirate .sail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: #8B4513;
+        }
+
+        .pirate .cannon {
+            position: absolute;
+            width: 40px;
+            height: 25px;
+            background: #4A4A4A;
+            bottom: 25px;
+            z-index: 2;
+            border-radius: 5px;
+        }
+
+        .pirate .cannon.left {
+            left: 15px;
+        }
+
+        .pirate .cannon.right {
+            right: 15px;
+        }
+
+        .pirate .cannon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #2C2C2C;
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+
+        .pirate .cannon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -5px;
+            width: 10px;
+            height: 20px;
+            background: #4A4A4A;
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+
+        .pirate .flag {
+            position: absolute;
+            top: -85px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 20px;
+            background: #FF0000;
+            clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            z-index: 2;
+        }
+
+        .pirate .windows {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pirate .window {
+            width: 15px;
+            height: 15px;
+            background: #87CEEB;
+            border-radius: 50%;
+            border: 2px solid #4682B4;
+        }
+
+        .pirate .railing {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: #A0522D;
+            border-radius: 2px;
+        }
+
+        .pirate .railing::before,
+        .pirate .railing::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            width: 5px;
+            height: 15px;
+            background: #A0522D;
+            border-radius: 2px;
+        }
+
+        .pirate .railing::before {
+            left: 20px;
+        }
+
+        .pirate .railing::after {
+            right: 20px;
+        }
+
+        .cannonball {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #2C2C2C;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .target {
+            position: absolute;
+            width: 100px;
+            height: 60px;
+            background: #8B4513;
+            border-radius: 10px 10px 0 0;
+            z-index: 1;
+            transform: translateX(0);
+            animation: sail 15s linear;
+            box-shadow: 0 0 10px rgba(139, 69, 19, 0.3);
+        }
+
+        .target .hull {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #8B4513;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+        }
+
+        .target .hull::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #654321;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .target .deck {
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            width: calc(100% - 20px);
+            height: 15px;
+            background: #A0522D;
+            border-radius: 5px;
+        }
+
+        .target .mast {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 60px;
+            background: #8B4513;
+            z-index: 1;
+        }
+
+        .target .mast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 15px;
+            background: #FFD700;
+            border-radius: 50%;
+            border: 2px solid #B8860B;
+        }
+
+        .target .sail {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            background: #F5F5F5;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            z-index: 0;
+        }
+
+        .target .sail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: #8B4513;
+        }
+
+        .target .flag {
+            position: absolute;
+            top: -65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 25px;
+            height: 15px;
+            background: #800000;
+            clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+            z-index: 2;
+        }
+
+        .target .windows {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .target .window {
+            width: 12px;
+            height: 12px;
+            background: #87CEEB;
+            border-radius: 50%;
+            border: 2px solid #4682B4;
+        }
+
+        .target .railing {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #A0522D;
+            border-radius: 2px;
+        }
+
+        .target .railing::before,
+        .target .railing::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 12px;
+            background: #A0522D;
+            border-radius: 2px;
+        }
+
+        .target .railing::before {
+            left: 15px;
+        }
+
+        .target .railing::after {
+            right: 15px;
+        }
+
+        .target .cannon {
+            position: absolute;
+            width: 35px;
+            height: 20px;
+            background: #4A4A4A;
+            bottom: 20px;
+            z-index: 2;
+            border-radius: 5px;
+        }
+
+        .target .cannon.left {
+            left: 10px;
+        }
+
+        .target .cannon.right {
+            right: 10px;
+        }
+
+        .target .cannon::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: #2C2C2C;
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+
+        .target .cannon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: -5px;
+            width: 8px;
+            height: 16px;
+            background: #4A4A4A;
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+
+        .target.sinking {
+            animation: none;
+            transition: transform 2s ease-out, opacity 2s ease-out;
+        }
+
+        @keyframes sail {
+            from {
+                transform: translateX(-100px);
+            }
+            to {
+                transform: translateX(calc(100vw + 100px));
+            }
+        }
+
+        .controls {
+            margin-top: 1rem;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .instructions {
+            margin-top: 1rem;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: #FFF5EE;
+            animation: wave 2s infinite linear;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .splash {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #FFF5EE;
+            border-radius: 50%;
+            animation: splash 0.5s forwards;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            z-index: 3;
+        }
+
+        @keyframes splash {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .shark {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background: #2C3E50;
+            border-radius: 50% 50% 0 0;
+            z-index: 1;
+            animation: swim 8s linear;
+            transform: scaleX(-1);
+        }
+
+        .shark::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -30px;
+            width: 0;
+            height: 0;
+            border-top: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            border-right: 30px solid #2C3E50;
+        }
+
+        .shark::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 15px;
+            height: 15px;
+            background: #ECF0F1;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .shark .fin {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid #2C3E50;
+        }
+
+        .shark .tail {
+            position: absolute;
+            top: 50%;
+            left: -40px;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 30px;
+            background: #2C3E50;
+            clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
+        }
+
+        .shark .gills {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .shark .gills::before,
+        .shark .gills::after {
+            content: '';
+            width: 100%;
+            height: 2px;
+            background: #34495E;
+        }
+
+        @keyframes swim {
+            from {
+                transform: translateX(calc(100vw + 100px)) scaleX(-1);
+            }
+            to {
+                transform: translateX(-100px) scaleX(-1);
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: explode 0.5s ease-out forwards;
+            z-index: 3;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(20);
+                opacity: 0;
+            }
+        }
+
+        .spark {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            animation: sparkle 0.5s ease-out forwards;
+            z-index: 3;
+        }
+
+        @keyframes sparkle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Pirate Shooting Game</h1>
+        <div class="score-container">
+            Score: <span id="score">0</span>
+        </div>
+        <div class="game-area" id="gameArea">
+            <div class="pirate" id="pirate">
+                <div class="hull"></div>
+                <div class="deck"></div>
+                <div class="mast"></div>
+                <div class="sail"></div>
+                <div class="flag"></div>
+                <div class="windows">
+                    <div class="window"></div>
+                    <div class="window"></div>
+                    <div class="window"></div>
+                </div>
+                <div class="railing"></div>
+                <div class="cannon left"></div>
+                <div class="cannon right"></div>
+            </div>
+            <div class="wave"></div>
+        </div>
+        <div class="controls">
+            <button id="startButton">Start Game</button>
+        </div>
+        <div class="instructions">
+            <p>Move your mouse to aim and click to shoot!</p>
+            <p>Hit the red targets to score points!</p>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let gameInterval;
+        let isGameRunning = false;
+        const gameArea = document.getElementById('gameArea');
+        const pirate = document.getElementById('pirate');
+        const scoreElement = document.getElementById('score');
+        const startButton = document.getElementById('startButton');
+
+        function checkCollision(cannonball, target) {
+            const cannonballRect = cannonball.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+
+            return !(cannonballRect.right < targetRect.left || 
+                    cannonballRect.left > targetRect.right || 
+                    cannonballRect.bottom < targetRect.top || 
+                    cannonballRect.top > targetRect.bottom);
+        }
+
+        function sinkShip(ship) {
+            // Get the current position of the ship
+            const currentTransform = window.getComputedStyle(ship).transform;
+            const matrix = new DOMMatrix(currentTransform);
+            const currentX = matrix.m41;
+            
+            // Stop the sailing animation
+            ship.classList.add('sinking');
+            
+            // Apply the sinking animation from current position
+            ship.style.transform = `translateX(${currentX}px) rotate(90deg)`;
+            ship.style.opacity = '0';
+            
+            setTimeout(() => {
+                if (ship.parentNode) {
+                    ship.remove();
+                }
+            }, 2000);
+        }
+
+        function createSplash(x, y) {
+            const splash = document.createElement('div');
+            splash.className = 'splash';
+            splash.style.left = x + 'px';
+            splash.style.bottom = y + 'px';
+            gameArea.appendChild(splash);
+            
+            setTimeout(() => {
+                splash.remove();
+            }, 500);
+        }
+
+        function createFirework(x, y, color) {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = x + 'px';
+            firework.style.top = y + 'px';
+            firework.style.background = color;
+            gameArea.appendChild(firework);
+
+            // Create sparkles
+            for (let i = 0; i < 12; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                spark.style.background = color;
+                
+                // Random direction for each spark
+                const angle = (i * 30) * (Math.PI / 180);
+                const distance = 50 + Math.random() * 50;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                spark.style.setProperty('--tx', tx + 'px');
+                spark.style.setProperty('--ty', ty + 'px');
+                
+                gameArea.appendChild(spark);
+                
+                // Remove spark after animation
+                setTimeout(() => spark.remove(), 500);
+            }
+
+            // Remove firework after animation
+            setTimeout(() => firework.remove(), 500);
+        }
+
+        function createExplosion(x, y) {
+            const colors = ['#ff0000', '#ffd700', '#ff69b4', '#00ff00', '#ff4500'];
+            
+            // Create multiple fireworks
+            for (let i = 0; i < 5; i++) {
+                const offsetX = (Math.random() - 0.5) * 20;
+                const offsetY = (Math.random() - 0.5) * 20;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                setTimeout(() => {
+                    createFirework(x + offsetX, y + offsetY, color);
+                }, i * 50);
+            }
+        }
+
+        function shootCannonball(e) {
+            if (!isGameRunning) return;
+
+            const pirateRect = pirate.getBoundingClientRect();
+            const gameAreaRect = gameArea.getBoundingClientRect();
+            
+            // Create left cannonball
+            const leftCannonball = document.createElement('div');
+            leftCannonball.className = 'cannonball';
+            leftCannonball.style.left = (pirateRect.left - gameAreaRect.left + 15) + 'px';
+            leftCannonball.style.bottom = '30px';
+            
+            // Create right cannonball
+            const rightCannonball = document.createElement('div');
+            rightCannonball.className = 'cannonball';
+            rightCannonball.style.left = (pirateRect.left - gameAreaRect.left + 45) + 'px';
+            rightCannonball.style.bottom = '30px';
+
+            // Calculate angle from pirate to click position
+            const angle = Math.atan2(
+                e.clientY - (pirateRect.top + pirateRect.height / 2),
+                e.clientX - (pirateRect.left + pirateRect.width / 2)
+            );
+
+            const velocity = 15;
+            const vx = Math.cos(angle) * velocity;
+            const vy = Math.sin(angle) * velocity;
+
+            gameArea.appendChild(leftCannonball);
+            gameArea.appendChild(rightCannonball);
+
+            let leftPosX = parseFloat(leftCannonball.style.left);
+            let leftPosY = gameArea.offsetHeight - 30;
+            let rightPosX = parseFloat(rightCannonball.style.left);
+            let rightPosY = gameArea.offsetHeight - 30;
+
+            function animateCannonballs() {
+                leftPosX += vx;
+                leftPosY -= vy;
+                rightPosX += vx;
+                rightPosY -= vy;
+
+                leftCannonball.style.left = leftPosX + 'px';
+                leftCannonball.style.bottom = (gameArea.offsetHeight - leftPosY) + 'px';
+                rightCannonball.style.left = rightPosX + 'px';
+                rightCannonball.style.bottom = (gameArea.offsetHeight - rightPosY) + 'px';
+
+                // Check for collisions with ships and sharks
+                const targets = document.querySelectorAll('.target:not(.sinking)');
+                const sharks = document.querySelectorAll('.shark');
+                
+                targets.forEach(target => {
+                    if (checkCollision(leftCannonball, target) || checkCollision(rightCannonball, target)) {
+                        score += 10;
+                        scoreElement.textContent = score;
+                        sinkShip(target);
+                        leftCannonball.remove();
+                        rightCannonball.remove();
+                        return;
+                    }
+                });
+
+                sharks.forEach(shark => {
+                    if (checkCollision(leftCannonball, shark) || checkCollision(rightCannonball, shark)) {
+                        score += 15;
+                        scoreElement.textContent = score;
+                        const sharkRect = shark.getBoundingClientRect();
+                        const gameAreaRect = gameArea.getBoundingClientRect();
+                        const x = sharkRect.left - gameAreaRect.left + sharkRect.width / 2;
+                        const y = sharkRect.top - gameAreaRect.top + sharkRect.height / 2;
+                        createExplosion(x, y);
+                        shark.remove();
+                        leftCannonball.remove();
+                        rightCannonball.remove();
+                        return;
+                    }
+                });
+
+                // Check if cannonballs hit the water
+                if (leftPosY <= 0) {
+                    createSplash(leftPosX, '0px');
+                    leftCannonball.remove();
+                }
+                if (rightPosY <= 0) {
+                    createSplash(rightPosX, '0px');
+                    rightCannonball.remove();
+                }
+
+                if (leftPosX < 0 || leftPosX > gameArea.offsetWidth || leftPosY < 0 || leftPosY > gameArea.offsetHeight) {
+                    leftCannonball.remove();
+                    rightCannonball.remove();
+                    return;
+                }
+
+                requestAnimationFrame(animateCannonballs);
+            }
+
+            requestAnimationFrame(animateCannonballs);
+        }
+
+        function createTarget() {
+            const target = document.createElement('div');
+            target.className = 'target';
+            target.style.top = Math.random() * (gameArea.offsetHeight - 100) + 'px';
+            
+            // Add ship parts
+            const hull = document.createElement('div');
+            hull.className = 'hull';
+            target.appendChild(hull);
+
+            const deck = document.createElement('div');
+            deck.className = 'deck';
+            target.appendChild(deck);
+
+            const mast = document.createElement('div');
+            mast.className = 'mast';
+            target.appendChild(mast);
+
+            const sail = document.createElement('div');
+            sail.className = 'sail';
+            target.appendChild(sail);
+
+            const flag = document.createElement('div');
+            flag.className = 'flag';
+            target.appendChild(flag);
+
+            const windows = document.createElement('div');
+            windows.className = 'windows';
+            for (let i = 0; i < 3; i++) {
+                const window = document.createElement('div');
+                window.className = 'window';
+                windows.appendChild(window);
+            }
+            target.appendChild(windows);
+
+            const railing = document.createElement('div');
+            railing.className = 'railing';
+            target.appendChild(railing);
+
+            const leftCannon = document.createElement('div');
+            leftCannon.className = 'cannon left';
+            target.appendChild(leftCannon);
+
+            const rightCannon = document.createElement('div');
+            rightCannon.className = 'cannon right';
+            target.appendChild(rightCannon);
+            
+            gameArea.appendChild(target);
+
+            // Remove the ship after animation completes
+            target.addEventListener('animationend', () => {
+                if (!target.classList.contains('sinking')) {
+                    target.remove();
+                }
+            });
+        }
+
+        function createShark() {
+            const shark = document.createElement('div');
+            shark.className = 'shark';
+            shark.style.top = Math.random() * (gameArea.offsetHeight - 100) + 'px';
+            
+            // Add shark parts
+            const fin = document.createElement('div');
+            fin.className = 'fin';
+            shark.appendChild(fin);
+
+            const tail = document.createElement('div');
+            tail.className = 'tail';
+            shark.appendChild(tail);
+
+            const gills = document.createElement('div');
+            gills.className = 'gills';
+            shark.appendChild(gills);
+            
+            gameArea.appendChild(shark);
+
+            setTimeout(() => {
+                shark.remove();
+            }, 8000);
+        }
+
+        function startGame() {
+            if (isGameRunning) {
+                resetGame();
+            } else {
+                isGameRunning = true;
+                startButton.textContent = 'Reset Game';
+                
+                // Add sun and clouds
+                const sun = document.createElement('div');
+                sun.className = 'sun';
+                gameArea.appendChild(sun);
+
+                const cloud1 = document.createElement('div');
+                cloud1.className = 'cloud cloud-1';
+                gameArea.appendChild(cloud1);
+
+                const cloud2 = document.createElement('div');
+                cloud2.className = 'cloud cloud-2';
+                gameArea.appendChild(cloud2);
+
+                // Start spawning enemies
+                gameInterval = setInterval(() => {
+                    if (Math.random() < 0.7) {
+                        createTarget();
+                    } else {
+                        createShark();
+                    }
+                }, 2000);
+            }
+        }
+
+        function resetGame() {
+            score = 0;
+            scoreElement.textContent = '0';
+            
+            // Remove all existing ships and sharks
+            const existingShips = document.querySelectorAll('.target');
+            existingShips.forEach(ship => ship.remove());
+            
+            const existingSharks = document.querySelectorAll('.shark');
+            existingSharks.forEach(shark => shark.remove());
+            
+            gameArea.innerHTML = `
+                <div class="pirate" id="pirate">
+                    <div class="hull"></div>
+                    <div class="deck"></div>
+                    <div class="mast"></div>
+                    <div class="sail"></div>
+                    <div class="flag"></div>
+                    <div class="windows">
+                        <div class="window"></div>
+                        <div class="window"></div>
+                        <div class="window"></div>
+                    </div>
+                    <div class="railing"></div>
+                    <div class="cannon left"></div>
+                    <div class="cannon right"></div>
+                </div>
+                <div class="wave"></div>
+            `;
+            clearInterval(gameInterval);
+            startButton.textContent = 'Start Game';
+            isGameRunning = false;
+        }
+
+        gameArea.addEventListener('click', shootCannonball);
+        startButton.addEventListener('click', startGame);
+    </script>
+</body>
+</html> 

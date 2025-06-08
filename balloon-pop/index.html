@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moon and Sun Pop Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #fff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .score-container {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .game-area {
+            width: 100%;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .background-sun {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: #f1c40f;
+            border-radius: 50%;
+            box-shadow: 0 0 50px #f1c40f;
+            z-index: 1;
+        }
+
+        .background-moon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            background: #ecf0f1;
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(236, 240, 241, 0.5);
+            z-index: 1;
+        }
+
+        .banana {
+            position: absolute;
+            width: 40px;
+            height: 80px;
+            background: #f1c40f;
+            cursor: pointer;
+            animation: float 4s ease-in-out infinite;
+            transition: transform 0.2s;
+            transform: rotate(45deg);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 
+                -5px 0 0 0 #f39c12,
+                -10px 0 0 0 #e67e22,
+                -15px 0 0 0 #d35400;
+            clip-path: path('M 20,0 C 40,0 40,20 40,40 C 40,60 20,80 0,80 C -20,80 -40,60 -40,40 C -40,20 -20,0 0,0 Z');
+            z-index: 2;
+        }
+
+        .banana::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 20px;
+            background: #d35400;
+            border-radius: 3px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .banana::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.2) 50%,
+                rgba(255,255,255,0.1) 100%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .banana:hover {
+            transform: scale(1.1) rotate(45deg);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(45deg); }
+            50% { transform: translateY(-20px) rotate(45deg); }
+        }
+
+        .controls {
+            margin-top: 1rem;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .instructions {
+            margin-top: 1rem;
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 1s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Moon and Sun Pop</h1>
+        <div class="score-container">
+            Moons: <span id="moonScore">0</span>/2 | Sun: <span id="sunScore">0</span>/1
+        </div>
+        <div class="game-area" id="gameArea">
+            <div class="background-sun"></div>
+            <div class="background-moon"></div>
+            <div class="stars" id="stars"></div>
+        </div>
+        <div class="controls">
+            <button id="startButton">Start Game</button>
+        </div>
+        <div class="instructions">
+            <p>Click on the moons and sun to collect them!</p>
+            <p>Find all 2 moons and 1 sun to win!</p>
+        </div>
+    </div>
+
+    <script>
+        let moonScore = 0;
+        let sunScore = 0;
+        let gameInterval;
+        let isGameRunning = false;
+        const gameArea = document.getElementById('gameArea');
+        const moonScoreElement = document.getElementById('moonScore');
+        const sunScoreElement = document.getElementById('sunScore');
+        const startButton = document.getElementById('startButton');
+        const starsContainer = document.getElementById('stars');
+
+        // Create stars background
+        function createStars() {
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 1 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function createMoon() {
+            if (moonScore >= 2) return;
+            
+            const moon = document.createElement('div');
+            moon.className = 'banana';
+            moon.style.left = Math.random() * (gameArea.offsetWidth - 60) + 'px';
+            moon.style.bottom = '-60px';
+            
+            moon.addEventListener('click', () => {
+                if (isGameRunning && moonScore < 2) {
+                    moonScore++;
+                    moonScoreElement.textContent = moonScore;
+                    moon.remove();
+                    checkWin();
+                }
+            });
+
+            gameArea.appendChild(moon);
+            animateElement(moon, 60);
+        }
+
+        function createSun() {
+            if (sunScore >= 1) return;
+            
+            const sun = document.createElement('div');
+            sun.className = 'banana';
+            sun.style.left = Math.random() * (gameArea.offsetWidth - 80) + 'px';
+            sun.style.bottom = '-80px';
+            
+            sun.addEventListener('click', () => {
+                if (isGameRunning && sunScore < 1) {
+                    sunScore++;
+                    sunScoreElement.textContent = sunScore;
+                    sun.remove();
+                    checkWin();
+                }
+            });
+
+            gameArea.appendChild(sun);
+            animateElement(sun, 80);
+        }
+
+        function animateElement(element, height) {
+            const duration = 3000 + Math.random() * 2000;
+            const startTime = Date.now();
+
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = elapsed / duration;
+
+                if (progress < 1) {
+                    element.style.bottom = `${-height + progress * (gameArea.offsetHeight + height)}px`;
+                    requestAnimationFrame(animate);
+                } else {
+                    element.remove();
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function checkWin() {
+            if (moonScore === 2 && sunScore === 1) {
+                alert('Congratulations! You found all the moons and the sun!');
+                resetGame();
+            }
+        }
+
+        function startGame() {
+            if (isGameRunning) {
+                resetGame();
+            } else {
+                isGameRunning = true;
+                startButton.textContent = 'Reset Game';
+                gameInterval = setInterval(() => {
+                    if (Math.random() < 0.7) { // 70% chance for moon
+                        createMoon();
+                    } else {
+                        createSun();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetGame() {
+            moonScore = 0;
+            sunScore = 0;
+            moonScoreElement.textContent = '0';
+            sunScoreElement.textContent = '0';
+            gameArea.innerHTML = `
+                <div class="background-sun"></div>
+                <div class="background-moon"></div>
+                <div class="stars" id="stars"></div>
+            `;
+            createStars();
+            clearInterval(gameInterval);
+            startButton.textContent = 'Start Game';
+            isGameRunning = false;
+        }
+
+        startButton.addEventListener('click', startGame);
+        createStars();
+    </script>
+</body>
+</html> 

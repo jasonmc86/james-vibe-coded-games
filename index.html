@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James's Games Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-title {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .game-description {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .play-button {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .play-button:hover {
+            background: #2980b9;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>James's Games Collection</h1>
+            <p class="subtitle">A collection of fun and educational games for children</p>
+        </header>
+
+        <div class="games-grid">
+            <div class="game-card">
+                <h2 class="game-title">Green Light Red Light</h2>
+                <p class="game-description">A classic game where you need to move when the light is green and freeze when it's red. Avoid obstacles and race to the finish line!</p>
+                <a href="green-light-red-light/index.html" class="play-button">Play Now</a>
+            </div>
+
+            <div class="game-card">
+                <h2 class="game-title">Balloon Pop</h2>
+                <p class="game-description">Pop as many balloons as you can! Test your reflexes and have fun with this colorful balloon popping game.</p>
+                <a href="balloon-pop/index.html" class="play-button">Play Now</a>
+            </div>
+
+            <div class="game-card">
+                <h2 class="game-title">Racing Car Game</h2>
+                <p class="game-description">Race your car through exciting tracks, avoid obstacles, and compete for the best time!</p>
+                <a href="racing-car-game/index.html" class="play-button">Play Now</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024 James's Games Collection. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html> 

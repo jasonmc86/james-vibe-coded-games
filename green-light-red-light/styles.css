@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.game-container {
+    text-align: center;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 2rem;
+}
+
+.traffic-light {
+    width: 60px;
+    height: 120px;
+    background-color: #333;
+    border-radius: 10px;
+    margin: 0 auto 2rem;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.light {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 auto;
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.light.active {
+    opacity: 1;
+}
+
+.red {
+    background-color: #ff4444;
+}
+
+.green {
+    background-color: #44ff44;
+}
+
+.controls {
+    margin-bottom: 2rem;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1.1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.score {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.game-area {
+    width: 600px;
+    height: 400px;
+    background-color: #e0e0e0;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.player {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    transition: transform 0.1s ease;
+    z-index: 2;
+}
+
+.human {
+    background-color: #2196F3;
+    bottom: 0;
+}
+
+.computer {
+    width: 35px;
+    height: 35px;
+}
+
+#computer-players {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.computer-eliminated {
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+.obstacle {
+    position: absolute;
+    background-color: #FF5722;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.finish-line {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 10px;
+    background: repeating-linear-gradient(
+        45deg,
+        #4CAF50,
+        #4CAF50 10px,
+        #45a049 10px,
+        #45a049 20px
+    );
+    z-index: 1;
+}
+
+.finish-line::before {
+    content: 'FINISH';
+    position: absolute;
+    top: 50%;
+    left: -60px;
+    transform: translateY(-50%);
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 20px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+} 
