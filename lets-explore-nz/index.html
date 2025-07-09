@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Explore New Zealand!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #b3e0ff 0%, #e0ffe0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            color: #222;
+        }
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            max-width: 900px;
+        }
+        h1 {
+            text-align: center;
+            color: #00796b;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        #gameCanvas {
+            border: 3px solid #00796b;
+            border-radius: 10px;
+            background: #e0ffe0;
+            display: block;
+            margin: 0 auto 1rem auto;
+        }
+        .controls {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #00796b;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+        .back-button:hover {
+            background: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🇳🇿 Mummy Let's Explore New Zealand with James and Daddy! 🇳🇿</h1>
+        <canvas id="gameCanvas" width="1200" height="900"></canvas>
+        <div style="height: 60px;"></div>
+        <div id="city-list" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin: 2.5rem 0 0 0;"></div>
+        <div class="controls" style="margin-top: 1.5rem;">
+            <h3>🗺️ Controls</h3>
+            <p>Drag the city names to the correct places on the map!</p>
+        </div>
+        <a href="../index.html" class="back-button" style="margin-top: 2.5rem;">← Back to Games</a>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farm Adventure - James's Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            color: #333;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2E8B57;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #gameCanvas {
+            border: 3px solid #2E8B57;
+            border-radius: 10px;
+            background: #90EE90;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .controls {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+
+        .controls h3 {
+            color: #2E8B57;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 1.5rem;
+            color: #2E8B57;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #2E8B57;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+
+        .back-button:hover {
+            background: #1a5f3a;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🌾 Farm Adventure 🌾</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <div>Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div>Carrots</div>
+                <div class="score-value" id="carrots">0</div>
+            </div>
+            <div class="score-item">
+                <div>Potatoes</div>
+                <div class="score-value" id="potatoes">0</div>
+            </div>
+            <div class="score-item">
+                <div>Fruits</div>
+                <div class="score-value" id="fruits">0</div>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div class="controls">
+            <h3>🎮 Controls</h3>
+            <p><strong>Arrow Keys:</strong> Move the active vehicle</p>
+            <p><strong>1 Key:</strong> Select Tractor</p>
+            <p><strong>2 Key:</strong> Select Digger</p>
+            <p><strong>Collect:</strong> Drive over fruits and vegetables to collect them!</p>
+        </div>
+
+        <a href="../index.html" class="back-button">← Back to Games</a>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html> 
