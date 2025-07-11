@@ -272,6 +272,31 @@ window.addEventListener('keyup', e => {
     if (e.key === ' ') spacePressed = false;
 });
 
+// Mobile: Device orientation controls
+if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', function(event) {
+        // gamma: left/right tilt, range ~[-90, 90]
+        const gamma = event.gamma || 0;
+        // Map gamma to firetruck x position
+        // gamma -30 (left tilt) => left edge, gamma +30 (right tilt) => right edge
+        const minGamma = -30, maxGamma = 30;
+        const percent = Math.max(0, Math.min(1, (gamma - minGamma) / (maxGamma - minGamma)));
+        firetruck.x = percent * (GAME_WIDTH - firetruck.width);
+    });
+}
+
+// Mobile: Tap to shoot water
+canvas.addEventListener('touchstart', function(e) {
+    if (!gameOver && !won) {
+        waters.push({
+            x: firetruck.x + firetruck.width / 2 - WATER_WIDTH / 2,
+            y: firetruck.y - WATER_HEIGHT,
+        });
+    }
+    // Prevent scrolling
+    e.preventDefault();
+}, { passive: false });
+
 // Start game
 requestAnimationFrame(gameLoop);
 document.getElementById('restart-btn').onclick = resetGame;
