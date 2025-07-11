@@ -121,10 +121,19 @@
         </div>
         <div class="controls">
             <h3>🚒 Controls</h3>
-            <p>Move the firetruck with <b>Left/Right</b> arrows or <b>A/D</b> keys. Shoot water with <b>Spacebar</b>!</p>
+            <p id="controls-text">Move the firetruck with <b>Left/Right</b> arrows or <b>A/D</b> keys. Shoot water with <b>Spacebar</b>!</p>
         </div>
         <a href="../index.html" class="back-button">← Back to Games</a>
     </div>
     <script src="game.js"></script>
+    <script>
+// Mobile/desktop controls instructions
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+if (isMobile()) {
+    document.getElementById('controls-text').innerHTML = 'Tilt your device to move the firetruck.<br>Tap anywhere to shoot water!';
+}
+</script>
 </body>
 </html> 
