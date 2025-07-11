@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Fire! Shoot the Fire!</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffe0b3 0%, #ffd6d6 100%);
+            min-height: 100vh;
+            min-width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            color: #222;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 1.5vh 1vw 2vh 1vw;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 1vh 0 1vh 0;
+            max-width: 98vw;
+            width: 98vw;
+            max-height: 98vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            color: #d84315;
+            font-size: 3vw;
+            margin-bottom: 1vh;
+        }
+        #gameCanvas {
+            border: 3px solid #d84315;
+            border-radius: 10px;
+            background: #fffbe0;
+            display: block;
+            margin: 0 auto 1vh auto;
+            width: 96vw;
+            height: 60vh;
+            max-width: 1200px;
+            max-height: 70vh;
+        }
+        #progress-container {
+            width: 96vw;
+            max-width: 1200px;
+            margin: 0 auto 1vh auto;
+            display: flex;
+            align-items: center;
+            gap: 1vw;
+        }
+        .controls {
+            text-align: center;
+            margin: 1vh 0 1vh 0;
+            padding: 1vh 0.5vw;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            font-size: 1.2vw;
+            width: 96vw;
+            max-width: 1200px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.8vh 2vw;
+            background: #d84315;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+            margin-top: 1vh;
+            font-size: 1.2vw;
+        }
+        .back-button:hover {
+            background: #a32c0b;
+        }
+        @media (max-width: 900px) {
+            h1 { font-size: 5vw; }
+            .controls, .back-button { font-size: 2.5vw; }
+        }
+        @media (max-width: 600px) {
+            .game-container {
+                max-width: 100vw;
+                width: 100vw;
+                padding: 0.5vh 0.2vw 1vh 0.2vw;
+            }
+            #gameCanvas, #progress-container {
+                max-width: 99vw;
+                width: 99vw;
+            }
+            h1 {
+                font-size: 6vw;
+            }
+            .controls, .back-button { font-size: 3vw; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🚒 Fire Fire! Shoot the Fire! 🚒</h1>
+        <canvas id="gameCanvas" width="1200" height="700"></canvas>
+        <div id="progress-container" style="width: 100%; max-width: 600px; margin: 0 auto 1rem auto; display: flex; align-items: center; gap: 1rem;">
+            <div style="flex: 1; background: #eee; border-radius: 10px; height: 28px; width: 100%; overflow: hidden;">
+                <div id="progress-bar" style="background: linear-gradient(90deg, #ffd600, #ff7043); height: 100%; width: 0%; border-radius: 10px;"></div>
+            </div>
+            <div id="trophy-restart" style="display: none; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 2.2rem;">🏆</span>
+                <button id="restart-btn" style="padding: 0.4rem 1.2rem; font-size: 1rem; border-radius: 20px; background: #ffd600; color: #d84315; border: none; cursor: pointer;">Restart</button>
+            </div>
+        </div>
+        <div class="controls">
+            <h3>🚒 Controls</h3>
+            <p>Move the firetruck with <b>Left/Right</b> arrows or <b>A/D</b> keys. Shoot water with <b>Spacebar</b>!</p>
+        </div>
+        <a href="../index.html" class="back-button">← Back to Games</a>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 
