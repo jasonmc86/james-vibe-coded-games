@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>James' Balloon Pop Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            background-color: #1a1a2e; /* Darker blue for night sky */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            touch-action: manipulation;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Add sky elements */
+        .sky-element {
+            position: fixed;
+            z-index: -1;
+        }
+
+        .sun {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ffd700, #ff8c00);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #ff8c00;
+            top: 50px;
+            right: 50px;
+        }
+
+        .moon {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #fff, #e6e6e6);
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        .moon-1 {
+            top: 100px;
+            left: 100px;
+        }
+
+        .moon-2 {
+            top: 150px;
+            right: 150px;
+            width: 60px;
+            height: 60px;
+        }
+
+        .star {
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            position: fixed;
+            animation: twinkle 1.5s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        h1 {
+            color: #fff;
+            background-color: #FF69B4;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 0 0 10px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: clamp(20px, 5vw, 32px);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #game-container {
+            position: relative;
+            margin: 10px auto;
+            width: 100%;
+            max-width: 800px;
+            height: 80vh;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        #score {
+            font-size: clamp(18px, 4vw, 24px);
+            color: #fff;
+            margin: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        #controls {
+            margin: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            touch-action: manipulation;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #FF1493;
+        }
+
+        #game-over {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            max-width: 300px;
+            z-index: 100;
+        }
+
+        .balloon {
+            position: absolute;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: transform 0.1s;
+            box-shadow: inset -5px -5px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin: -20px;
+            /* Make it look like a real banana */
+            width: 40px;
+            height: 280px;
+            background: linear-gradient(45deg, #FFE135, #FFD700);
+            /* Create banana curve */
+            border-radius: 20px 20px 20px 20px / 140px 140px 20px 20px;
+            /* Add banana curve */
+            transform-origin: center;
+            /* Add banana texture */
+            background-image: 
+                linear-gradient(45deg, #FFE135, #FFD700),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(139, 69, 19, 0.1) 10px,
+                    rgba(139, 69, 19, 0.1) 20px
+                );
+            /* Add banana curve - much more pronounced crescent shape */
+            clip-path: path('M 20,0 C 30,0 40,20 40,40 C 40,140 30,240 20,260 C 10,280 0,240 0,140 C 0,40 10,0 20,0 Z');
+            /* Add banana shine */
+            box-shadow: 
+                inset -10px -10px 30px rgba(0, 0, 0, 0.2),
+                inset 10px 10px 30px rgba(255, 255, 255, 0.3);
+            /* Add default rotation for crescent shape */
+            transform: rotate(45deg) scaleX(1.5); /* Scale horizontally to make curve more visible */
+        }
+
+        .balloon:active {
+            transform: scale(0.95);
+        }
+
+        .balloon::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 20%;
+            height: 20%;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            /* Add banana shine */
+            box-shadow: 
+                20px 20px 0 -5px rgba(255, 255, 255, 0.2),
+                40px 40px 0 -8px rgba(255, 255, 255, 0.1);
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 25px;
+            background: linear-gradient(to bottom, #8B4513, #654321); /* Brown stem with gradient */
+            border-radius: 3px;
+            /* Add stem texture */
+            box-shadow: 
+                inset 0 0 5px rgba(0, 0, 0, 0.3),
+                0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Add banana spots */
+        .balloon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 30% 30%, rgba(139, 69, 19, 0.3) 3px, transparent 3px),
+                radial-gradient(circle at 70% 40%, rgba(139, 69, 19, 0.3) 3px, transparent 3px),
+                radial-gradient(circle at 40% 60%, rgba(139, 69, 19, 0.3) 3px, transparent 3px),
+                radial-gradient(circle at 60% 20%, rgba(139, 69, 19, 0.3) 3px, transparent 3px),
+                radial-gradient(circle at 20% 70%, rgba(139, 69, 19, 0.3) 3px, transparent 3px),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.3) 3px, transparent 3px);
+            border-radius: inherit;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+            
+            #controls {
+                margin: 5px;
+                padding: 5px;
+            }
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(0); }
+        }
+
+        .balloon.popping {
+            animation: pop 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add sky elements -->
+    <div class="sky-element sun"></div>
+    <div class="sky-element moon moon-1"></div>
+    <div class="sky-element moon moon-2"></div>
+    <div id="stars-container"></div>
+
+    <h1>James' Balloon Pop Game</h1>
+    <div id="score">Score: <span id="score-value">0</span></div>
+    <div id="game-container">
+        <div id="game-over">
+            <h2>Game Over!</h2>
+            <p>Your score: <span id="final-score">0</span></p>
+            <button onclick="startGame()">Play Again</button>
+        </div>
+    </div>
+    <div id="controls">
+        <button onclick="startGame()">Start Game</button>
+        <div id="music-controls" style="margin-top: 10px;">
+            <audio id="background-music" loop>
+                <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0c6ff1bab.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <button onclick="toggleMusic()" id="music-button">Play Music</button>
+            <p id="music-message" style="color: #ff6b6b; font-size: 14px; margin-top: 5px;"></p>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let score = 0;
+        let gameLoop = null;
+        let isGameOver = false;
+        let balloons = [];
+        let gameTime = 60; // 60 seconds game duration
+        let timeLeft = gameTime;
+        let balloonInterval = null;
+        let gameTimer = null;
+
+        // Balloon properties
+        const balloonColors = [
+            '#FFE135', // Bright yellow
+            '#FFD700', // Gold
+            '#FFC107', // Amber
+            '#FFB300', // Darker yellow
+            '#FFA000'  // Deep yellow
+        ];
+        // Make bananas bigger
+        const balloonSizes = [120, 140, 160, 180, 200];
+        // Keep balloons slow
+        const balloonSpeeds = [0.2, 0.4, 0.6, 0.8, 1.0];
+
+        // Get DOM elements
+        const gameContainer = document.getElementById('game-container');
+        const scoreValue = document.getElementById('score-value');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScore = document.getElementById('final-score');
+        const backgroundMusic = document.getElementById('background-music');
+        const musicButton = document.getElementById('music-button');
+        const musicMessage = document.getElementById('music-message');
+
+        // Music control function
+        function toggleMusic() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play().catch(error => {
+                    musicMessage.textContent = "Error playing music: " + error.message;
+                });
+                musicButton.textContent = 'Pause Music';
+            } else {
+                backgroundMusic.pause();
+                musicButton.textContent = 'Play Music';
+            }
+        }
+
+        // Check if music file exists
+        backgroundMusic.addEventListener('error', function() {
+            musicMessage.textContent = "Error loading music. Please check your internet connection.";
+            musicButton.disabled = true;
+        });
+
+        function createBalloon() {
+            const size = balloonSizes[Math.floor(Math.random() * balloonSizes.length)];
+            const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+            const speed = balloonSpeeds[Math.floor(Math.random() * balloonSpeeds.length)];
+            
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            // Set banana dimensions
+            balloon.style.width = (size * 0.2) + 'px';  // Much skinnier - one-fifth width
+            balloon.style.height = size + 'px';         // Full height for banana shape
+            balloon.style.backgroundColor = color;
+            balloon.style.left = Math.random() * (gameContainer.clientWidth - size) + 'px';
+            balloon.style.bottom = '-100px';
+            
+            // Add banana-like rotation with crescent shape
+            const baseRotation = 45; // Base rotation for crescent shape
+            const randomRotation = Math.random() * 360; // Random rotation between 0 and 360 degrees
+            balloon.style.transform = `rotate(${baseRotation + randomRotation}deg) scaleX(1.5)`; // Scale horizontally to make curve more visible
+            
+            gameContainer.appendChild(balloon);
+            
+            const balloonObj = {
+                element: balloon,
+                speed: speed,
+                points: Math.floor(speed * 2),
+                rotation: baseRotation + randomRotation
+            };
+            
+            balloons.push(balloonObj);
+            
+            // Add click/touch event
+            balloon.addEventListener('click', () => popBalloon(balloonObj));
+            balloon.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                popBalloon(balloonObj);
+            });
+        }
+
+        function popBalloon(balloon) {
+            if (isGameOver) return;
+            
+            // Add pop animation
+            balloon.element.classList.add('popping');
+            
+            // Play pop sound
+            const popSound = new Audio('https://assets.mixkit.co/active_storage/sfx/212/212-preview.mp3');
+            popSound.play().catch(() => {}); // Ignore errors if sound fails to play
+            
+            // Add points and update score
+            score += balloon.points;
+            scoreValue.textContent = score;
+            
+            // Remove balloon after animation
+            setTimeout(() => {
+                balloon.element.remove();
+                const index = balloons.indexOf(balloon);
+                if (index > -1) {
+                    balloons.splice(index, 1);
+                }
+            }, 300);
+        }
+
+        function updateBalloons() {
+            for (let i = balloons.length - 1; i >= 0; i--) {
+                const balloon = balloons[i];
+                const currentBottom = parseFloat(balloon.element.style.bottom);
+                balloon.element.style.bottom = (currentBottom + balloon.speed) + 'px';
+                
+                // Add slight swaying motion
+                const swayAmount = Math.sin(currentBottom / 50) * 5;
+                balloon.element.style.left = (parseFloat(balloon.element.style.left) + swayAmount) + 'px';
+                
+                // Remove balloon if it goes off screen
+                if (currentBottom > gameContainer.clientHeight) {
+                    balloon.element.remove();
+                    balloons.splice(i, 1);
+                }
+            }
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            isGameOver = true;
+            clearInterval(balloonInterval);
+            clearInterval(gameTimer);
+            finalScore.textContent = score;
+            gameOverScreen.style.display = 'block';
+        }
+
+        function resetGame() {
+            // Clear existing balloons
+            balloons.forEach(balloon => balloon.element.remove());
+            balloons = [];
+            
+            // Reset game state
+            score = 0;
+            isGameOver = false;
+            timeLeft = gameTime;
+            scoreValue.textContent = '0';
+            gameOverScreen.style.display = 'none';
+        }
+
+        function startGame() {
+            resetGame();
+            
+            // Create balloons less frequently
+            balloonInterval = setInterval(createBalloon, 1500); // Create balloons every 1.5 seconds
+            
+            // Start game timer
+            gameTimer = setInterval(updateTimer, 1000);
+            
+            // Start game loop
+            gameLoop = requestAnimationFrame(gameUpdate);
+        }
+
+        function gameUpdate() {
+            if (isGameOver) return;
+            
+            updateBalloons();
+            gameLoop = requestAnimationFrame(gameUpdate);
+        }
+
+        // Add stars to the background
+        function createStars() {
+            const starsContainer = document.getElementById('stars-container');
+            const numberOfStars = 100;
+
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * window.innerWidth + 'px';
+                star.style.top = Math.random() * window.innerHeight + 'px';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Initialize the game
+        window.onload = function() {
+            // Draw initial state
+            gameContainer.style.height = '80vh';
+            // Create stars
+            createStars();
+            // Start the game automatically
+            startGame();
+        };
+
+        // Handle window resize
+        function handleResize() {
+            gameContainer.style.height = '80vh';
+        }
+
+        window.addEventListener('resize', handleResize);
+    </script>
+</body>
+</html> 

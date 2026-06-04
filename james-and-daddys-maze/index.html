@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James and Daddy's Maze</title>
+    <style>
+        html, body {
+            height: 100%; margin: 0; padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            color: #222; box-sizing: border-box;
+        }
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 1rem;
+            max-width: 98vw;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        h1 {
+            text-align: center; color: #1a1a2e; margin-bottom: 0.5rem;
+        }
+        #gameCanvas {
+            border: 3px solid #1a1a2e;
+            border-radius: 10px;
+            background: #2d5016;
+            display: block;
+            margin: 0 auto;
+            max-width: 96vw;
+            outline: none;
+        }
+        #gameCanvas:focus { outline: none; }
+        #status {
+            font-size: 1.25rem;
+            color: #1a1a2e;
+            margin: 0.75rem 0;
+            font-weight: bold;
+            text-align: center;
+            min-height: 1.5em;
+        }
+        .controls {
+            text-align: center;
+            margin: 0.75rem 0;
+            padding: 1rem;
+            background: rgba(26,26,46,0.08);
+            border-radius: 10px;
+            max-width: 900px;
+            line-height: 1.6;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.6rem 1.5rem;
+            background: #1a1a2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-top: 0.5rem;
+        }
+        .back-button:hover { background: #0f0f1a; }
+        button.start-btn {
+            padding: 10px 24px;
+            font-size: 16px;
+            margin-top: 8px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button.start-btn:hover { background: #43a047; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🗺️ James and Daddy's Maze 🗺️</h1>
+        <div id="status">Press Start — move anytime!</div>
+        <canvas id="gameCanvas" width="900" height="650" tabindex="0"></canvas>
+        <div class="controls">
+            <p>
+                <b>Two-player maze race!</b> Move <b>anytime</b> — no turns, no waiting!<br>
+                James starts top-left, Daddy starts bottom-right. Race to the ⭐ in the <b>middle</b>!<br>
+                🧒 James: <b>arrow keys</b> · 👨 Daddy: <b>W A S D</b> — one step per tap, or <b>hold</b> for smooth steps!<br>
+                Hold a key for more than <b>0.2 seconds</b> to keep moving. James: <b>Space</b> smashes walls (6 times)!<br>
+                <b>Easy for James:</b> simpler path to the ⭐! <b>Hard for Daddy:</b> lots of walls on his side!<br>
+                Click the maze or press Start and go!
+            </p>
+            <button class="start-btn" onclick="startGame()">Start Game</button>
+        </div>
+        <a href="../index.html" class="back-button">← Back to Games</a>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

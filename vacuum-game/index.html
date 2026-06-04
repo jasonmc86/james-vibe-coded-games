@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James the Vacuum Up Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            z-index: 10;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .game-info {
+            display: flex;
+            gap: 2rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .score, .time, .dirt-count, .capacity {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .capacity {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .capacity-bar {
+            width: 60px;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #666;
+        }
+
+        .capacity-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #FFC107 50%, #F44336 100%);
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .capacity.full .capacity-fill {
+            background: #F44336;
+            animation: fullPulse 1s infinite;
+        }
+
+        @keyframes fullPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            background: linear-gradient(45deg, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+            border: 3px solid #654321;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .vacuum {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: #2c3e50;
+            border-radius: 20px 20px 5px 5px;
+            border: 2px solid #34495e;
+            transition: all 0.1s ease;
+            z-index: 5;
+        }
+
+        .vacuum::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 15px;
+            background: #e74c3c;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .vacuum::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 8px;
+            background: #95a5a6;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .collectible {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: collectiblePulse 2s infinite;
+            z-index: 3;
+            cursor: pointer;
+        }
+
+        .collectible.house {
+            color: #8B4513;
+        }
+
+        .collectible.person {
+            color: #FFD700;
+        }
+
+        .collectible.lego {
+            color: #FF6B6B;
+        }
+
+        @keyframes collectiblePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .warning-sign {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            background: #FF0000;
+            border: 4px solid #FFFFFF;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FFFFFF;
+            text-align: center;
+            z-index: 4;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            animation: signBlink 1.5s infinite;
+        }
+
+        .warning-sign::before {
+            content: '⚠️';
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .warning-sign::after {
+            content: 'STOP';
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes signBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.7; }
+        }
+
+        .charger-station {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border: 3px solid #3498db;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+
+        .charger-station::before {
+            content: '🔌';
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .charger-station::after {
+            content: 'CHARGER';
+            font-size: 10px;
+            color: #3498db;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .charge-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.3s;
+            display: none;
+        }
+
+        .charge-button:hover {
+            background: #c0392b;
+        }
+
+        .charge-button.visible {
+            display: inline-block;
+        }
+
+        .beep-sound {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 25;
+            display: none;
+            animation: beepPulse 0.5s infinite;
+        }
+
+        @keyframes beepPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .controls {
+            margin-top: 1rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls h3 {
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .controls p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 20;
+            display: none;
+        }
+
+        .game-over h2 {
+            margin-bottom: 1rem;
+            color: #e74c3c;
+        }
+
+        .restart-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .restart-btn:hover {
+            background: #2980b9;
+        }
+
+        .vacuum-sound {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .suck-effect {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: suck 0.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes suck {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-header">
+        <h1 class="game-title">🧹 James the Vacuum Up Game 🧹</h1>
+        <div class="game-info">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="dirt-count">Items Left: <span id="itemCount">20</span></div>
+            <div class="capacity">
+                <span>Capacity:</span>
+                <div class="capacity-bar">
+                    <div class="capacity-fill" id="capacityFill"></div>
+                </div>
+                <span id="capacityText">0/10</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container" id="gameContainer">
+        <div class="vacuum" id="vacuum"></div>
+        <div class="charger-station" id="chargerStation"></div>
+        <div class="beep-sound" id="beepSound">🔊 BEEP! VACUUM FULL! 🔊</div>
+        <div class="game-over" id="gameOver">
+            <h2 id="gameOverTitle">Game Over!</h2>
+            <p id="gameOverMessage">You vacuumed up everything!</p>
+            <button class="restart-btn" onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+
+        <div class="controls">
+        <h3>How to Play</h3>
+        <p>Use the arrow keys to move James the vacuum around the room. Vacuum up all the houses 🏠, people 👥, and Lego blocks 🧱 to win! But be careful - don't crash into the red warning signs ⚠️ or you'll lose! When the vacuum gets full (10 items), it will beep and you can press SPACEBAR or click the button to return to the charger 🔌 to empty it.</p>
+        <button class="charge-button" id="chargeButton" onclick="returnToCharger()">🔌 Return to Charger</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

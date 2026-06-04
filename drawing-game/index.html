@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James's Drawing Game - James's Games</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            color: #333;
+        }
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 { text-align: center; margin-bottom: 1rem; color: #5a4fcf; font-size: 1.8rem; }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+        }
+        .tool-group { display: flex; align-items: center; gap: 0.5rem; }
+        .tool-group label { font-weight: bold; color: #5a4fcf; }
+        .colors { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .color-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .color-btn:hover { transform: scale(1.15); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .color-btn.active { border-color: #333; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333; }
+        .color-btn.activated { animation: color-hop 0.4s ease; }
+        @keyframes color-hop {
+            0% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-12px) scale(1.2); }
+            70% { transform: translateY(-4px) scale(1.1); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        .color-btn-wrapper { position: relative; display: inline-block; }
+        .activation-mark {
+            position: absolute; top: -8px; right: -8px;
+            width: 20px; height: 20px;
+            background: #2ecc71; color: white;
+            border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+        .activation-mark.show { display: flex; animation: mark-pop 0.3s ease; }
+        @keyframes mark-pop {
+            0% { transform: scale(0); }
+            60% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .size-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #5a4fcf;
+            border-radius: 25px;
+            background: white; color: #5a4fcf;
+            font-weight: bold; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .size-btn:hover { background: #5a4fcf; color: white; }
+        .size-btn.active { background: #5a4fcf; color: white; }
+        .action-btn {
+            padding: 0.6rem 1.2rem; border: none; border-radius: 25px;
+            font-weight: bold; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .action-btn:hover { transform: scale(1.05); }
+        .clear-btn { background: #e74c3c; color: white; }
+        .clear-btn:hover { background: #c0392b; }
+        .save-btn { background: #27ae60; color: white; }
+        .save-btn:hover { background: #219a52; }
+        .eraser-btn { background: #95a5a6; color: white; }
+        .eraser-btn:hover { background: #7f8c8d; }
+        .eraser-btn.active { background: #2c3e50; }
+        .canvas-wrapper {
+            text-align: center; margin: 1rem 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+        #drawCanvas {
+            display: block; margin: 0 auto;
+            cursor: crosshair;
+            touch-action: none;
+            background: white;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #5a4fcf;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .back-button:hover { background: #4a3fbf; }
+        .hint { text-align: center; color: #666; font-size: 0.9rem; margin-top: 0.5rem; }
+        .mode-hint { text-align: center; color: #5a4fcf; font-weight: bold; margin-bottom: 0.5rem; min-height: 1.4em; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🖍️ James's Drawing Game 🖍️</h1>
+
+        <p class="mode-hint" id="modeHint">Pick a colour, then press Space once (tick on), Space again (tick off), then use arrow keys to draw!</p>
+
+        <div class="toolbar">
+            <div class="tool-group">
+                <label>Colors:</label>
+                <div class="colors" id="colorPalette"></div>
+            </div>
+            <div class="tool-group">
+                <label>Size:</label>
+                <button class="size-btn" data-size="4">Small</button>
+                <button class="size-btn active" data-size="12">Medium</button>
+                <button class="size-btn" data-size="24">Big</button>
+            </div>
+            <button class="action-btn eraser-btn" id="eraserBtn">🧽 Eraser</button>
+            <button class="action-btn clear-btn" id="clearBtn">🗑️ Clear</button>
+            <button class="action-btn save-btn" id="saveBtn">💾 Save picture</button>
+        </div>
+
+        <div class="canvas-wrapper">
+            <canvas id="drawCanvas" width="800" height="500"></canvas>
+        </div>
+
+        <p class="hint">Draw with mouse/finger or: Space once = tick on colour, Space twice = tick off, then arrow keys draw!</p>
+
+        <a href="../index.html" class="back-button">← Back to Games</a>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

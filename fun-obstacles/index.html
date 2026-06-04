@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Obstacles - Round Race Track</title>
+    <style>
+        html, body {
+            height: 100%; margin: 0; padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh; min-width: 100vw;
+            display: flex; flex-direction: column; align-items: center;
+            color: #222; box-sizing: border-box;
+        }
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 1.5vh 1vw 2vh 1vw;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin: 1vh 0 1vh 0;
+            max-width: 98vw; width: 98vw; max-height: 98vh;
+            display: flex; flex-direction: column; align-items: center;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center; color: #1a1a2e; font-size: 3vw; margin-bottom: 1vh;
+        }
+        #gameCanvas {
+            border: 3px solid #1a1a2e;
+            border-radius: 10px;
+            background: #2d5016;
+            display: block;
+            margin: 0 auto 1vh auto;
+            width: 96vw; height: 60vh; max-width: 1200px; max-height: 70vh;
+            outline: none;
+        }
+        
+        #gameCanvas:focus {
+            outline: none;
+        }
+        .controls {
+            text-align: center; margin: 1vh 0 1vh 0;
+            padding: 1vh 0.5vw;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            font-size: 1.2vw;
+            width: 96vw; max-width: 1200px;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 0.8vh 2vw;
+            background: #1a1a2e;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+            margin-top: 1vh;
+            font-size: 1.2vw;
+        }
+        .back-button:hover {
+            background: #0f0f1a;
+        }
+        #score {
+            font-size: 1.5vw;
+            color: #1a1a2e;
+            margin: 1vh 0;
+            font-weight: bold;
+        }
+        @media (max-width: 900px) {
+            h1 { font-size: 5vw; }
+            .controls, .back-button, #score { font-size: 2.5vw; }
+        }
+        @media (max-width: 600px) {
+            .game-container {
+                max-width: 100vw; width: 100vw;
+                padding: 0.5vh 0.2vw 1vh 0.2vw;
+            }
+            #gameCanvas {
+                max-width: 99vw; width: 99vw;
+            }
+            h1 { font-size: 6vw; }
+            .controls, .back-button, #score { font-size: 3vw; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🏁 Fun Obstacles - Round Race Track 🏁</h1>
+        <div id="score">Jason's Turn | Jason: 0 | James: 0 | Battery: 100%</div>
+        <canvas id="gameCanvas" width="1200" height="700"></canvas>
+        <div class="controls">
+            <h3>🏎️ Controls</h3>
+            <p id="controls-text">
+                <b>Two Player Turn-Based Game!</b><br>
+                🚗 <b>Jason</b> (Red Car) and 🚕 <b>James</b> (Yellow Car) take turns!<br>
+                When one player's car breaks down (hits obstacle/runs out of battery), it's the other player's turn!<br><br>
+                <b>Controls:</b><br>
+                🚀 <b>Space Bar</b> or <b>Up Arrow</b> = Go Up<br>
+                ⬇️ <b>Down Arrow</b> = Go Down<br>
+                ⬅️ <b>Left Arrow</b> = Go Left<br>
+                ➡️ <b>Right Arrow</b> = Go Right<br>
+                Collect 🔋 batteries to keep your car running! Avoid obstacles and other cars!<br>
+                Visit the Hospital 🏥, School 🏫, Playground 🛝, and Pak N Save 🛒!
+            </p>
+            <button onclick="startGame()" style="padding: 10px 20px; font-size: 16px; margin-top: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Start Game</button>
+        </div>
+        <a href="../index.html" class="back-button">← Back to Games</a>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
+
