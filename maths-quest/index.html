@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maths Quest - James's Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ink: #183047;
+            --paper: #fffdf7;
+            --sky: #dff4ff;
+            --blue: #246bfe;
+            --green: #13a86b;
+            --yellow: #ffd24a;
+            --red: #ef476f;
+            --purple: #7d4cff;
+            --line: rgba(24, 48, 71, 0.14);
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Trebuchet MS", Arial, sans-serif;
+            color: var(--ink);
+            background:
+                linear-gradient(180deg, #c9f1ff 0%, #f8ffef 58%, #e6f8d2 100%);
+            padding: 16px;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        .app-shell {
+            width: min(1180px, 100%);
+            margin: 0 auto;
+        }
+
+        header {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .title-lockup h1 {
+            font-size: clamp(2rem, 5vw, 4.1rem);
+            line-height: 0.98;
+            color: #123b60;
+            letter-spacing: 0;
+        }
+
+        .title-lockup p {
+            max-width: 680px;
+            margin-top: 8px;
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: #34556e;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 16px;
+            border: 2px solid rgba(18, 59, 96, 0.18);
+            border-radius: 8px;
+            color: #123b60;
+            background: rgba(255, 255, 255, 0.72);
+            text-decoration: none;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .level-tabs {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .level-tab {
+            min-height: 58px;
+            border: 2px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.78);
+            color: var(--ink);
+            font-weight: 900;
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 32px minmax(0, 1fr);
+            align-items: center;
+            gap: 6px;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .level-tab span {
+            font-size: 1.45rem;
+            text-align: center;
+        }
+
+        .level-tab small {
+            display: block;
+            font-size: 0.75rem;
+            color: #557086;
+            margin-top: 2px;
+        }
+
+        .level-tab.active {
+            background: #123b60;
+            color: #fff;
+            border-color: #123b60;
+        }
+
+        .level-tab.active small {
+            color: #c9f1ff;
+        }
+
+        .playfield {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .lesson-panel,
+        .progress-panel {
+            border: 2px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 253, 247, 0.9);
+            box-shadow: 0 18px 50px rgba(18, 59, 96, 0.13);
+        }
+
+        .lesson-panel {
+            overflow: hidden;
+        }
+
+        .scene {
+            min-height: 218px;
+            display: grid;
+            grid-template-columns: 140px minmax(0, 1fr);
+            gap: 16px;
+            align-items: center;
+            padding: 18px;
+            background:
+                radial-gradient(circle at 18% 18%, rgba(255, 210, 74, 0.55), transparent 28%),
+                linear-gradient(135deg, #e8f8ff 0%, #fff8d7 47%, #dffbe9 100%);
+            border-bottom: 2px solid var(--line);
+        }
+
+        .guide {
+            width: 126px;
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            border: 4px solid rgba(18, 59, 96, 0.18);
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: inset 0 -10px 0 rgba(255, 210, 74, 0.32);
+            font-size: 4.2rem;
+        }
+
+        .visual-model {
+            min-height: 176px;
+            border: 2px dashed rgba(18, 59, 96, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.68);
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-zone {
+            padding: 18px;
+        }
+
+        .mission-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mission-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            color: #fff;
+            background: #123b60;
+            font-weight: 900;
+        }
+
+        .round-count {
+            font-weight: 900;
+            color: #557086;
+        }
+
+        .question-zone h2 {
+            min-height: 76px;
+            font-size: clamp(1.7rem, 4vw, 3rem);
+            line-height: 1.08;
+            letter-spacing: 0;
+            margin-bottom: 14px;
+        }
+
+        .math-sentence {
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+            font-size: clamp(1.45rem, 3vw, 2.5rem);
+            font-weight: 900;
+        }
+
+        .math-chip {
+            min-width: 48px;
+            min-height: 48px;
+            padding: 4px 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: #fff;
+            border: 2px solid rgba(18, 59, 96, 0.18);
+        }
+
+        .math-chip.answer-blank {
+            min-width: 76px;
+            border-color: var(--purple);
+            color: var(--purple);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .answer-btn {
+            min-height: 72px;
+            border: 3px solid rgba(18, 59, 96, 0.16);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            font-size: clamp(1.35rem, 3vw, 2.1rem);
+            font-weight: 900;
+            cursor: pointer;
+            transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .answer-btn:hover:not(:disabled),
+        .answer-btn:focus-visible {
+            transform: translateY(-2px);
+            border-color: var(--blue);
+            outline: none;
+        }
+
+        .answer-btn.correct {
+            background: #dffbe9;
+            border-color: var(--green);
+            color: #06633c;
+        }
+
+        .answer-btn.wrong {
+            background: #ffe3e9;
+            border-color: var(--red);
+            color: #9b1432;
+        }
+
+        .feedback-row {
+            min-height: 72px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto;
+            gap: 8px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .feedback {
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #edf7ff;
+            border: 2px solid rgba(36, 107, 254, 0.14);
+            font-size: 1.05rem;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .feedback.success {
+            background: #e4fbef;
+            border-color: rgba(19, 168, 107, 0.28);
+        }
+
+        .feedback.try {
+            background: #fff3c9;
+            border-color: rgba(255, 180, 0, 0.36);
+        }
+
+        .tool-btn {
+            min-width: 92px;
+            min-height: 52px;
+            border: 0;
+            border-radius: 8px;
+            background: #123b60;
+            color: #fff;
+            font-weight: 900;
+            cursor: pointer;
+            padding: 0 14px;
+        }
+
+        .tool-btn.hint {
+            background: var(--yellow);
+            color: #4e3900;
+        }
+
+        .tool-btn:disabled {
+            opacity: 0.48;
+            cursor: default;
+        }
+
+        .progress-panel {
+            padding: 14px;
+        }
+
+        .progress-panel h2 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .score-line {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            align-items: center;
+            min-height: 38px;
+            border-bottom: 1px solid var(--line);
+            font-weight: 900;
+        }
+
+        .score-line:last-of-type {
+            border-bottom: 0;
+        }
+
+        .score-value {
+            font-size: 1.25rem;
+            color: #123b60;
+        }
+
+        .mastery-list {
+            margin-top: 16px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .mastery-item {
+            display: grid;
+            gap: 5px;
+        }
+
+        .mastery-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 900;
+        }
+
+        .meter {
+            height: 12px;
+            background: #e8eef2;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+            border-radius: 8px;
+            transition: width 0.25s ease;
+        }
+
+        .badges {
+            min-height: 72px;
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .badge {
+            min-height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 8px;
+            background: #f1f5f8;
+            border: 2px solid var(--line);
+            font-size: 1.45rem;
+            opacity: 0.38;
+        }
+
+        .badge.earned {
+            background: #fff3c9;
+            border-color: rgba(255, 180, 0, 0.45);
+            opacity: 1;
+        }
+
+        .ten-frame,
+        .token-field,
+        .array-field {
+            width: 100%;
+            display: grid;
+            gap: 8px;
+            justify-content: center;
+            align-content: center;
+        }
+
+        .ten-frame {
+            grid-template-columns: repeat(5, 34px);
+            grid-auto-rows: 34px;
+        }
+
+        .token-field {
+            grid-template-columns: repeat(auto-fit, minmax(32px, 34px));
+            max-width: 520px;
+        }
+
+        .array-field {
+            grid-template-columns: repeat(var(--columns, 4), 36px);
+            grid-auto-rows: 36px;
+        }
+
+        .token {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid #123b60;
+            font-weight: 900;
+            box-shadow: 0 3px 0 rgba(18, 59, 96, 0.15);
+        }
+
+        .token.empty {
+            border-style: dashed;
+            background: rgba(255, 255, 255, 0.42);
+            box-shadow: none;
+        }
+
+        .token.blue {
+            border-color: var(--blue);
+            background: #eaf2ff;
+        }
+
+        .token.green {
+            border-color: var(--green);
+            background: #e4fbef;
+        }
+
+        .token.red {
+            border-color: var(--red);
+            background: #ffe3e9;
+            position: relative;
+        }
+
+        .token.red::after {
+            content: "";
+            position: absolute;
+            width: 36px;
+            height: 4px;
+            background: var(--red);
+            transform: rotate(-28deg);
+            border-radius: 4px;
+        }
+
+        .group-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .group-box {
+            min-width: 118px;
+            border: 2px solid rgba(18, 59, 96, 0.18);
+            border-radius: 8px;
+            padding: 10px;
+            background: #fff;
+        }
+
+        .group-label {
+            text-align: center;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .number-line {
+            width: min(620px, 100%);
+            min-height: 138px;
+            display: grid;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .line-track {
+            position: relative;
+            height: 12px;
+            background: #123b60;
+            border-radius: 8px;
+        }
+
+        .line-jump {
+            position: absolute;
+            bottom: 8px;
+            height: 44px;
+            border: 4px solid var(--red);
+            border-bottom: 0;
+            border-radius: 80px 80px 0 0;
+        }
+
+        .line-labels {
+            display: grid;
+            grid-template-columns: repeat(var(--steps), 1fr);
+            font-weight: 900;
+            color: #34556e;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .story-text {
+            font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+            line-height: 1.25;
+            font-weight: 900;
+            text-align: center;
+            max-width: 650px;
+        }
+
+        @media (max-width: 900px) {
+            header,
+            .playfield,
+            .scene {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                align-items: stretch;
+            }
+
+            .back-button {
+                justify-self: start;
+            }
+
+            .level-tabs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .guide {
+                justify-self: center;
+            }
+
+            .progress-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 10px;
+            }
+
+            .level-tabs,
+            .options-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .feedback-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tool-btn {
+                width: 100%;
+            }
+
+            .question-zone h2 {
+                min-height: auto;
+            }
+
+            .scene {
+                padding: 12px;
+            }
+
+            .visual-model {
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <header>
+            <div class="title-lockup">
+                <h1>Maths Quest</h1>
+                <p>Count, add, subtract, try trickier puzzles, and build simple multiplication power.</p>
+            </div>
+            <a class="back-button" href="../index.html">← Games</a>
+        </header>
+
+        <nav class="level-tabs" id="levelTabs" aria-label="Maths skills"></nav>
+
+        <main class="playfield">
+            <section class="lesson-panel" aria-live="polite">
+                <div class="scene">
+                    <div class="guide" id="guideFace" aria-hidden="true">🧑‍🚀</div>
+                    <div class="visual-model" id="visualModel"></div>
+                </div>
+
+                <div class="question-zone">
+                    <div class="mission-row">
+                        <div class="mission-pill" id="missionPill">🔢 Numbers</div>
+                        <div class="round-count" id="roundCount">Round 1</div>
+                    </div>
+
+                    <h2 id="questionText">Ready?</h2>
+                    <div class="math-sentence" id="mathSentence"></div>
+                    <div class="options-grid" id="optionsGrid"></div>
+
+                    <div class="feedback-row">
+                        <div class="feedback" id="feedback">Pick a skill to begin.</div>
+                        <button class="tool-btn hint" id="hintBtn" type="button">Hint</button>
+                        <button class="tool-btn" id="nextBtn" type="button" disabled>Next</button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="progress-panel">
+                <h2>Quest Score</h2>
+                <div class="score-line">
+                    <span>Score</span>
+                    <span class="score-value" id="scoreValue">0</span>
+                </div>
+                <div class="score-line">
+                    <span>Streak</span>
+                    <span class="score-value" id="streakValue">0</span>
+                </div>
+                <div class="score-line">
+                    <span>Stars</span>
+                    <span class="score-value" id="starsValue">0</span>
+                </div>
+
+                <div class="mastery-list" id="masteryList"></div>
+
+                <div class="badges" id="badges" aria-label="Earned badges"></div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

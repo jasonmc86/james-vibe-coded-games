@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Big Drop of Bouncy Balls</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #103c54 0%, #2b6f52 55%, #f6b94a 100%);
+            min-height: 100vh;
+            min-width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #1f2430;
+        }
+
+        .game-container {
+            width: 98vw;
+            max-width: 1200px;
+            min-height: 96vh;
+            margin: 1vh auto;
+            padding: 1.2vh 1vw 2vh;
+            background: rgba(255, 255, 255, 0.94);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0.5vh 0 1vh;
+            color: #143548;
+            text-align: center;
+            font-size: 3vw;
+        }
+
+        #score {
+            width: 96vw;
+            max-width: 1200px;
+            min-height: 2.4rem;
+            margin: 0 0 1vh;
+            padding: 0.6rem 1rem;
+            background: #143548;
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 96vw;
+            height: 62vh;
+            max-width: 1200px;
+            max-height: 700px;
+            background: #91d9ff;
+            border: 3px solid #143548;
+            border-radius: 10px;
+            outline: none;
+            touch-action: none;
+        }
+
+        .controls {
+            width: 96vw;
+            max-width: 1200px;
+            margin-top: 1vh;
+            padding: 1vh 1vw;
+            background: rgba(255, 255, 255, 0.82);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.45;
+        }
+
+        .start-button, .back-button {
+            display: inline-block;
+            margin-top: 0.8rem;
+            padding: 0.7rem 1.3rem;
+            border: 0;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .start-button {
+            background: #1f9d55;
+            color: white;
+        }
+
+        .start-button:hover {
+            background: #167a42;
+        }
+
+        .back-button {
+            background: #143548;
+            color: white;
+        }
+
+        .back-button:hover {
+            background: #0d2431;
+        }
+
+        @media (max-width: 900px) {
+            h1 {
+                font-size: 5vw;
+            }
+
+            #score, .controls, .start-button, .back-button {
+                font-size: 2.4vw;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                width: 100vw;
+                min-height: 100vh;
+                margin: 0;
+                padding: 0.5vh 0.2vw 1vh;
+                border-radius: 0;
+            }
+
+            h1 {
+                font-size: 6vw;
+            }
+
+            #gameCanvas, #score, .controls {
+                width: 99vw;
+            }
+
+            #score, .controls, .start-button, .back-button {
+                font-size: 3.2vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🟠 The Big Drop of Bouncy Balls 🔵</h1>
+        <div id="score">Catch 25 bouncy balls to win! Avoid the spiky balls.</div>
+        <canvas id="gameCanvas" width="1200" height="700" tabindex="0"></canvas>
+        <div class="controls">
+            <b>Move the bucket:</b> ⬅️ ➡️ arrow keys, A/D, mouse, or finger.<br>
+            Catch rainbow balls for bonus points, blue balls for slow motion, and stay away from spiky balls!
+            <br>
+            <button class="start-button" onclick="startGame()">Start Game</button>
+        </div>
+        <a href="../index.html" class="back-button">← Back to Games</a>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
